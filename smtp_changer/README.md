@@ -1,2 +1,2 @@
-#smtp_changer
+# smtp_changer
 * Small class to change smtp password + scan smtp ports via browser.
